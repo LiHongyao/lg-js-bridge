@@ -97,8 +97,8 @@ class JSBridge {
     JSBridge.call('saveImages', images);
   }
   /**
-   * 保存视频z至手机相册
-   * @param {string} videoUrl 视频地址集合/这里将视频的在线链接放入集合传递给原生进行保存
+   * 保存视频至手机相册
+   * @param {string} videoUrls 视频地址集合/这里将视频的在线链接放入集合传递给原生进行保存
    */
   public static saveVideos(videoUrls: string[]) {
     JSBridge.call('saveVideos', videoUrls);
@@ -108,7 +108,20 @@ class JSBridge {
    * 通知原生返回上一页（原生pop控制器）
    */
   public static nativeBack() {
-    JSBridge.call('nativeBack');
+    // JSBridge.call('nativeBack');
+    if (JSBridge.isiOS()) {
+      try {
+        window.webkit.messageHandlers.nativeBack.postMessage();
+      } catch (err) {
+        window.webkit.messageHandlers.gobackAPP.postMessage();
+      }
+    } else if (JSBridge.isAndroid()) {
+      try {
+        window.js_android.nativeBack();
+      } catch (err) {
+        window.js_android.gobackAPP();
+      }
+    }
   }
 
   /**
@@ -124,19 +137,34 @@ class JSBridge {
   public static openWeChat() {
     JSBridge.call('openWeChat');
   }
-  /**
-   * 邀请好友购买会员
-   * @param callback 回调方法名
-   */
-  public static inviteMembers(callback: string) {
-    JSBridge.call('inviteMembers', { callback });
-  }
+
   /**
    * 通知原生定位
    * @param callback 原生定位成功以后调用H5回调函数，并将定位信息作为回调函数参数传递。
    */
   public static getLocation(callback: string) {
     JSBridge.call('getLocation', { callback });
+  }
+
+  /**
+   * ———————————————————————————————— 【始生万物】 ————————————————————————————————
+   */
+  /**
+   * 原生活动商品分享
+   * @description 免费领和秒杀的分享
+   * @param options 配置项
+   * @param options.goodsType      0：免费领 1：秒杀
+   * @param options.itemId         活动商品id
+   */
+  public static shareActivityGoods(options: { goodsType: 0 | 1; itemId: string }) {
+    jsBridge.call('shareActivityGoods', options);
+  }
+  /**
+   * 邀请好友购买会员
+   * @param callback 回调方法名
+   */
+  public static inviteMembers(callback: string) {
+    JSBridge.call('inviteMembers', { callback });
   }
 }
 
