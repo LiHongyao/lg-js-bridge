@@ -34,13 +34,13 @@ class JSBridge {
       try {
         window.webkit.messageHandlers[fnName].postMessage(data ? JSON.stringify(data) : null);
       } catch (err) {
-        throw err;
+        console.log(err);
       }
     } else if (JSBridge.isAndroid()) {
       try {
         window.js_android[fnName](data ? JSON.stringify(data) : null);
       } catch (err) {
-        throw err;
+        console.log(err);
       }
     }
   }
