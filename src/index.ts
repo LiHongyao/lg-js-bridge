@@ -67,7 +67,7 @@ class JSBridge {
    */
   public static payment(params: {
     callback: string /** 支付回调函数名 */;
-    payType: 'ALI_PAY' | 'WX_PAY' | 'PANDATA_PAY' /** 支付类型，目前仅支持支付宝支付、微信支付、 熊猫支付 */;
+    payType: string /** 支付类型，目前仅支持支付宝支付、微信支付、 熊猫支付 */;
     payStr: string /** 支付参数（这里需要和后台沟通，将原生拉起支付的参数以JSON字符串形式返回，到时直接传递给原生并由原生解析即可） */;
     orderNo?: string /** 订单号（有时原生调用支付回调函数之后，H5这边需要通过订单号查询支付状态，所以这里将订单号传给原生，原生在回调时作为参数回传给H5使用） */;
   }) {
