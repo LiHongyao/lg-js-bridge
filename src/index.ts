@@ -113,13 +113,21 @@ class JSBridge {
       try {
         window.webkit.messageHandlers.nativeBack.postMessage();
       } catch (err) {
-        window.webkit.messageHandlers.gobackAPP.postMessage();
+        try {
+          window.webkit.messageHandlers.gobackAPP.postMessage();
+        } catch (e) {
+          console.log(e);
+        }
       }
     } else if (JSBridge.isAndroid()) {
       try {
         window.js_android.nativeBack();
       } catch (err) {
-        window.js_android.gobackAPP();
+        try {
+          window.js_android.gobackAPP();
+        } catch (e) {
+          console.log(e);
+        }
       }
     }
   }
