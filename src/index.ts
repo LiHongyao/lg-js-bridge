@@ -111,20 +111,20 @@ class JSBridge {
     // JSBridge.call('nativeBack');
     if (JSBridge.isiOS()) {
       try {
-        window.webkit.messageHandlers.nativeBack.postMessage();
+        window.webkit.messageHandlers.nativeBack.postMessage(null);
       } catch (err) {
         try {
-          window.webkit.messageHandlers.gobackAPP.postMessage();
+          window.webkit.messageHandlers.gobackAPP.postMessage(null);
         } catch (e) {
           console.log(e);
         }
       }
     } else if (JSBridge.isAndroid()) {
       try {
-        window.js_android.nativeBack();
+        window.js_android.nativeBack(null);
       } catch (err) {
         try {
-          window.js_android.gobackAPP();
+          window.js_android.gobackAPP(null);
         } catch (e) {
           console.log(e);
         }
