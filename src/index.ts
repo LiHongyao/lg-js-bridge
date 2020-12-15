@@ -44,6 +44,7 @@ class JSBridge {
       }
     }
   }
+  
   /**
    *
    * ================================ 黄金分割线：使用者只需阅读以下内容 ================================
@@ -133,7 +134,7 @@ class JSBridge {
   }
 
   /**
-   * 通知原生微信
+   * 通知原生绑定微信
    * @param callback 微信绑定之后的回调函数
    */
   public static bindWeChat(callback: string) {
