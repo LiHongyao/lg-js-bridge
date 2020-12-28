@@ -197,19 +197,14 @@ class JSBridge {
   }
 
   /**
-   * 从原生获取token
-   *
-   * 由于H5在和iOS通信时，iOS不能直接返回数据，所以这里H5采用prompt方式处理。然后iOS开发者在如下方法：
-   * - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * _Nullable result))completionHandler
-   * 中拦截H5中的prompt，通过type类型判断并做相应处理
-   *
-   * 「iOS开发者注意」----- 此方法的type类型为：GET_TOKEN
+   * 从原生获取token。「iOS开发者注意」----- 此方法的type类型为：GET_TOKEN
    */
   public static getToken() {
-    JSBridge.call({
+    const token = JSBridge.call({
       fnName: 'getToken',
       iOSPrompt: { type: 'GET_TOKEN' },
     });
+    return token ? token as string : '';
   }
 
   /**
