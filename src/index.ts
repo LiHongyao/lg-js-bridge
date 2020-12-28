@@ -204,7 +204,7 @@ class JSBridge {
       fnName: 'getToken',
       iOSPrompt: { type: 'GET_TOKEN' },
     });
-    return token ? token as string : '';
+    return token ? (token as string) : '';
   }
 
   /**
