@@ -3,6 +3,7 @@
  * webkit：iOS通信桥接对象
  * js_android：Android通信桥接对象
  */
+
 declare global {
   interface Window {
     webkit: any;
@@ -153,6 +154,25 @@ class JSBridge {
    */
   public static getLocation(callback: string) {
     JSBridge.call('getLocation', { callback });
+  }
+
+  /**
+   * 从原生获取token
+   *
+   * 由于H5在和iOS通信时，iOS不能直接返回数据，所以这里H5采用prompt方式处理。然后iOS开发者在如下方法：
+   * - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * _Nullable result))completionHandler
+   * 中拦截H5中的prompt，通过type类型判断并做相应处理
+   *
+   * 「iOS开发者注意」----- 此方法的type类型为：GET_TOKEN
+   */
+  public static getToken() {
+    if (JSBridge.isiOS()) {
+      return prompt(JSON.stringify({ type: 'GET_TOKEN' }));
+    } else if (JSBridge.isAndroid()) {
+      return window.js_android.getToken(null);
+    } else {
+      return '';
+    }
   }
 
   /**
