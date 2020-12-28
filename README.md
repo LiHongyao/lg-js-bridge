@@ -1,7 +1,7 @@
 # 概述
 
-此库主要用作 H5 和原生通过方法通信，使用本库，必须原生根据本库要求定义相应的方法，否则无法使用。严格上，原生接收参数的类型为对象类型，由于 Android 无法直接接收对象，所以本库在处理安卓参数时，如果是对象类型，则先 JSON 序列化之后再进行传递。iOS 保持原样。
-H5 在调用原生方法时，如果没有参数设置，本库会默认传递 null，原生在处理参数时需注意。
+此库主要用作 H5 和原生通过 **方法** 通信，使用本库，必须原生根据本库要求定义相应的方法，否则无法使用。严格上，原生接收参数的类型为 **对象类型**，由于 Android 无法直接接收对象，所以本库 **在处理安卓参数时，先 JSON 序列化之后再进行传递**。H5 在调用原生方法时，如果没有参数设置，本库会默认传递 `null` ，原生在处理参数时需注意。
+
 如果调用原生方法时，只设置一个参数，本库会默认以对象进行传递，比如 getLocation 获取定位信息，H5 在调用时直接传递回调函数名即可，如下所示：
 
 ```
@@ -14,7 +14,17 @@ getLocation('handler');
 {callback: 'handler'}
 ```
 
-再次强调，由于 Android 无法直接接收对象，所以本库在处理安卓参数时，如果是对象类型，则先 JSON 序列化之后再进行传递。iOS 保持原样。
+再次强调，由于 Android 无法直接接收对象，所以本库在处理安卓参数时，如果是对象类型，则先 JSON 序列化之后再进行传递。
+
+**同步返回：**
+
+在H5和原生交互的方法中，可能会遇到调用原生方法同步返回的情况，比如，我要调用 *getToken* 方法获取用户token，期望原生能够直接返回，而不是再定义一个方法供原生调用将token传递给H5。由于安卓在方法内部可以直接返回，而iOS不能，所以这里H5采用`prompt`方式处理，那么iOS开发者在如下方法：
+
+```objective-c
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * _Nullable result))completionHandler;
+```
+
+中统一拦截H5中的prompt，并通过H5传递过来的type类型判断并做相应处理。
 
 # 原生实现/H5 调用声明文件如下
 
@@ -82,7 +92,17 @@ static openWeChat(): void;
  */
 static getLocation(callback: string): void;
 /**
- * ———————————————————————————————— 【始生万物】 ————————————————————————————————
+ * 从原生获取token
+ *
+ * 由于H5在和iOS通信时，iOS不能直接返回数据，所以这里H5采用prompt方式处理。然后iOS开发者在如下方法：
+ * - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * _Nullable result))completionHandler
+ * 中拦截H5中的prompt，通过type类型判断并做相应处理
+ *
+ * 「iOS开发者注意」----- 此方法的type类型为：GET_TOKEN
+ */
+static getToken(): void;
+/**
+ * ———————————————————————————————— 【始生万物产品特有交互】 ————————————————————————————————
  */
 /**
  * 原生活动商品分享
