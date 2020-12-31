@@ -1,8 +1,14 @@
 # 概述
 
-此库主要用作 H5 和原生通过 **方法** 通信，使用本库，必须原生根据本库要求定义相应的方法，否则无法使用。严格上，原生接收参数的类型为 **对象类型**，由于 Android 无法直接接收对象，所以本库 **在处理安卓参数时，先 JSON 序列化之后再进行传递**。H5 在调用原生方法时，如果没有参数设置，本库会默认传递 `null` ，原生在处理参数时需注意。
+此库主要用作 H5 调用原生方法通信，H5开发者若要使用本库，需提示原生开发者根据本库 `声明文件` 要求定义相应的方法，否则无法使用。本库约定，安卓开发者注入到H5的方法对象为 `js_android`。
 
-如果调用原生方法时，只设置一个参数，本库会默认以对象进行传递，比如 getLocation 获取定位信息，H5 在调用时直接传递回调函数名即可，如下所示：
+
+
+为了统一入参，便于后期拓展，原生接收参数的类型为对象类型（注意：本库会将对象类型JSON序列化为字符串之后再进行传递）。H5 在调用原生方法时，如果没有参数设置，本库会默认传递 `null` 对象给原生，原生在处理参数时需注意。
+
+
+
+H5开发者在使用本库时，对于需传递供原生调用的JS方法，本库默认接收字符串方法名，并做特殊处理，将其转为 `{callback: 'fnName'}` 给原生。比如本库封装了一个 `getLocation` 的通信方法，H5在调用时，只需传递方法名即可，如下所示：
 
 ```
 getLocation('handler');
@@ -16,21 +22,59 @@ getLocation('handler');
 
 再次强调，由于 Android 无法直接接收对象，所以本库在处理安卓参数时，如果是对象类型，则先 JSON 序列化之后再进行传递。
 
+
+
 **同步返回：**
 
-在H5和原生交互的方法中，可能会遇到调用原生方法同步返回的情况，比如，我要调用 *getToken* 方法获取用户token，期望原生能够直接返回，而不是再定义一个方法供原生调用将token传递给H5。由于安卓在方法内部可以直接返回，而iOS不能，所以这里H5采用`prompt`方式处理，那么iOS开发者在如下方法：
+
+
+在H5和原生交互的方法中，可能会遇到调用原生方法同步返回的情况，比如，我要调用 *getToken* 方法获取用户token，期望原生能够直接返回，而不是再定义一个方法供原生调用将token传递给H5。由于安卓在方法内部可以return供H5接收，而iOS不能，所以这里H5采用 `prompt` 方式处理，那么iOS开发者在如下方法：
 
 ```objective-c
 - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * _Nullable result))completionHandler;
 ```
 
-中统一拦截H5中的prompt，并通过H5传递过来的type类型判断并做相应处理。
+中统一拦截H5中的prompt，并通过H5传递过来的type类型判断并做相应处理。如下所示:
 
-# 原生实现/H5 调用声明文件如下
+```objective-c
+// 设置代理
+self.webView.UIDelegate = self;
 
-特别说明：
+// JS端调用prompt函数时，会触发此代理方法。
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * __nullable result))completionHandler {
+    NSError *err = nil;
+    NSData *dataFromString = [prompt dataUsingEncoding:NSUTF8StringEncoding];
+    // 读取数据
+    NSDictionary *data = [NSJSONSerialization JSONObjectWithData:dataFromString options:NSJSONReadingMutableContainers error:&err];
+    if (!err){
+        // 根据data中type类型的返回指定数据
+        completionHandler(returnValue);
+    }
+}
+```
 
-1. 如下示例中的 callback 表示 H5 给原生作为回调的函数名变量，H5 调用时将原生回调的函数名作为参数设置;
+# 安装
+
+H5开发通过如下方式安装本库：
+
+```shell
+$ npm install lg-js-bridge
+$ yarn add lg-js-bridge
+```
+
+# 使用
+
+这里以获取Token为例：
+
+```js
+import jsBridge from 'lg-js-bridge';
+
+const token = jsBridge.getToken();
+```
+
+# 声明文件
+
+> 特别说明：如下示例中的 callback 表示 H5 给原生作为回调的函数名变量，H5 调用时将原生回调的函数名作为参数设置;
 
 ```typescript
 /**
