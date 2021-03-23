@@ -206,6 +206,7 @@ class JSBridge {
     });
     return token ? (token as string) : '';
   }
+  
 
   /**
    * ================================ 【四川始生万物科技有限公司专用】 ================================
@@ -231,6 +232,19 @@ class JSBridge {
     JSBridge.call({
       fnName: 'inviteMembers',
       data: { callback },
+    });
+  }
+  /**
+   * 通知原生播放广告视频
+   * @param callback 
+   */
+  public static playADVideo(options: {
+    callback: string;
+    adToken: string;
+  }) {
+    JSBridge.call({
+      fnName: 'playADVideo',
+      data: options,
     });
   }
 }
