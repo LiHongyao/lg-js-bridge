@@ -217,7 +217,7 @@ class JSBridge {
    * @param options.goodsType      0：免费领 1：秒杀
    * @param options.itemId         活动商品id
    */
-  public static shareActivityGoods(options: { goodsType: 0 | 1; itemId: string }) {
+  public static shareActivityGoods(options: { goodsType: number; itemId: string }) {
     JSBridge.call({
       fnName: 'shareActivityGoods',
       data: options,
