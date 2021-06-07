@@ -219,7 +219,7 @@ class JSBridge {
    * @param options.goodsType      0：免费领 1：秒杀
    * @param options.itemId         活动商品id
    */
-  public static shareActivityGoods(options: { goodsType: 0 | 1; itemId: string }) {
+  public static shareActivityGoods(options: { goodsType: number; itemId: string }) {
     JSBridge.call({
       fnName: 'shareActivityGoods',
       data: options,
@@ -233,6 +233,16 @@ class JSBridge {
     JSBridge.call({
       fnName: 'inviteMembers',
       data: { callback },
+    });
+  }
+  /**
+   * 通知原生播放广告视频
+   * @param callback
+   */
+  public static playADVideo(options: { callback: string; viewToken: string }) {
+    JSBridge.call({
+      fnName: 'playADVideo',
+      data: options,
     });
   }
 }
