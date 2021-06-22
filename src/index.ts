@@ -210,6 +210,17 @@ class JSBridge {
   }
 
   /**
+   * 邀请好友 --- 裂变
+   * @param callback 回调方法名
+   */
+   public static inviteFriends(callback: string) {
+    JSBridge.call({
+      fnName: 'inviteFriends',
+      data: { callback },
+    });
+  }
+
+  /**
    * ================================ 【四川始生万物科技有限公司专用】 ================================
    */
   /**
