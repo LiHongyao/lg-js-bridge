@@ -210,13 +210,25 @@ class JSBridge {
   }
 
   /**
-   * 邀请好友 --- 裂变
+   * 11. 邀请好友 --- 裂变
    * @param callback 回调方法名
    */
   public static inviteFriends(callback: string) {
     JSBridge.call({
       fnName: 'inviteFriends',
       data: { callback },
+    });
+  }
+  /**
+   * 12. 分享海报 --- 裂变
+   * @param data
+   * data.type  -- 分享海报类型，可用该字段标识使用场景
+   * data.callback -- 回调H5函数名
+   */
+  public static sharePoster(data: { type: string; callback: string }) {
+    JSBridge.call({
+      fnName: 'sharePoster',
+      data,
     });
   }
 

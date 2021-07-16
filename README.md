@@ -81,117 +81,79 @@ const token = jsBridge.getToken();
  * 1. 跳转微信小程序
  * @param {*} options
  */
-JSBridge.launchMiniProgram = function (options) {
-    JSBridge.call({
-        fnName: 'launchMiniProgram',
-        data: options,
-    });
-};
+static launchMiniProgram(options: {
+    userName: string /** 小程序原始id */;
+    path: string /** 拉起小程序页面的可带参路径，不填默认拉起小程序首页 */;
+    miniprogramType: 0 | 1 | 2 /** 打开类型；0：正式版，1：开发版，2：体验版 */;
+}): void;
 /**
  * 2. H5调用原生支付
  */
-JSBridge.payment = function (params) {
-    JSBridge.call({
-        fnName: 'payment',
-        data: params,
-    });
-};
+static payment(params: {
+    callback: string /** 支付回调H5函数名 */;
+    payType: string /** 支付类型，目前仅支持支付宝支付、微信支付、 熊猫支付 */;
+    payStr: string /** 支付参数（这里需要和后台沟通，将原生拉起支付的参数以JSON字符串形式返回，到时直接传递给原生并由原生解析即可） */;
+    orderNo?: string /** 订单号（有时原生调用支付回调函数之后，H5这边需要通过订单号查询支付状态，所以这里将订单号传给原生，原生在回调时作为参数回传给H5使用） */;
+}): void;
 /**
  * 3. H5调用原生分享
  */
-JSBridge.shareWith = function (options) {
-    JSBridge.call({
-        fnName: 'shareWith',
-        data: options,
-    });
-};
+static shareWith(options: {
+    type: 0 | 1 | 2 | 3 | 4 /** 分享类型： 0 文字 / 1 图片 / 2 网页链接 / 3 视频连接 / 4 小程序 */;
+    title?: string /** 标题（可选） */;
+    link?: string /** 网页链接（可选） */;
+    text?: string /** 文字内容/网页链接描述（可选） */;
+    videoUrl?: string /** 视频连接地址（可选） */;
+    imageUrl?: string /** 图片链接地址/网页链接缩略图（可选） */;
+    imageBase64?: string /** 图片base64（可选） */;
+}): void;
 /**
  * 4. 保存图片至手机相册
  * @param images 图片集合/这里将图片的在线链接放入集合传递给原生进行保存
  */
-JSBridge.saveImages = function (images) {
-    JSBridge.call({
-        fnName: 'saveImages',
-        data: images,
-    });
-};
+static saveImages(images: string[]): void;
 /**
  * 5. 保存视频至手机相册
  * @param {string} videoUrls 视频地址集合/这里将视频的在线链接放入集合传递给原生进行保存
  */
-JSBridge.saveVideos = function (videoUrls) {
-    JSBridge.call({
-        fnName: 'saveVideos',
-        data: videoUrls,
-    });
-};
+static saveVideos(videoUrls: string[]): void;
 /**
  * 6. 通知原生返回上一页（原生pop控制器）
  */
-JSBridge.nativeBack = function () {
-    switch (JSBridge.getEnv()) {
-        case 'ios':
-            try {
-                window.webkit.messageHandlers.nativeBack.postMessage(null);
-            }
-            catch (err) {
-                try {
-                    window.webkit.messageHandlers.gobackAPP.postMessage(null);
-                }
-                catch (e) {
-                    console.log(e);
-                }
-            }
-            break;
-        case 'android':
-            try {
-                window.js_android.gobackAPP(null);
-            }
-            catch (e) {
-                console.log(e);
-            }
-            break;
-        default:
-    }
-};
+static nativeBack(): void;
 /**
  * 7. 通知原生绑定微信
  * @param callback 微信绑定之后的回调函数
  */
-JSBridge.bindWeChat = function (callback) {
-    JSBridge.call({
-        fnName: 'bindWeChat',
-        data: { callback: callback },
-    });
-};
+static bindWeChat(callback: string): void;
 /**
  * 8. 通知原生打开微信
  */
-JSBridge.openWeChat = function () {
-    JSBridge.call({
-        fnName: 'openWeChat',
-    });
-};
+static openWeChat(): void;
 /**
  * 9. 通知原生定位
  * @param callback 原生定位成功以后调用H5回调函数，并将定位信息作为回调函数参数传递。
  */
-JSBridge.getLocation = function (callback) {
-    JSBridge.call({
-        fnName: 'getLocation',
-        data: { callback: callback },
-    });
-};
+static getLocation(callback: string): void;
 /**
  * 10. 从原生获取token。
  *
  * iOS开发者注意：----- 此方法通过prompt触发，type类型为：GET_TOKEN
  */
-JSBridge.getToken = function () {
-    var token = JSBridge.call({
-        fnName: 'getToken',
-        iOSPrompt: { type: 'GET_TOKEN' },
-    });
-    return token ? token : '';
-};
+static getToken(): string;
+/**
+ * 11. 邀请好友 --- 裂变
+ * @param callback 回调方法名
+ */
+static inviteFriends(callback: string): void;
+/**
+ * 12. 分享海报 --- 裂变
+ * @param data
+ * data.type  -- 分享海报类型，可用该字段标识使用场景
+ * data.callback -- 回调H5函数名
+ */
+static sharePoster(data: {
+    type: string;
+    callback: string;
+}): void;
 ```
